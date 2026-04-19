@@ -1,0 +1,367 @@
+{$VAULTWARDEN_DOMAIN} {
+  log {
+    level INFO
+    output file {$LOG_FILE} {
+      roll_size 10MB
+      roll_keep 10
+    }
+  }
+
+  # Certificat Let's Encrypt via DNS-01 challenge (Duck DNS)
+  tls {$CONTACT_EMAIL} {
+    dns duckdns {$DUCKDNS_TOKEN}
+  }
+
+  # Compression
+  encode zstd gzip
+
+  route {
+    @guide path /guide /guide/
+
+    handle @guide {
+      header Content-Type "text/html; charset=utf-8"
+      header Cache-Control "no-store"
+
+      respond <<HTML
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guide d'acces Vaultwarden</title>
+  <style>
+    :root {
+      --paper: #f7f3eb;
+      --ink: #1f2a2e;
+      --accent: #0f766e;
+      --accent-soft: #d9f3ee;
+      --panel: #fffdf8;
+      --line: rgba(31, 42, 46, 0.12);
+      --muted: #5d6b70;
+      --shadow: 0 24px 60px rgba(23, 40, 45, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 30%),
+        linear-gradient(180deg, #fcfaf5 0%, var(--paper) 100%);
+    }
+
+    main {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 48px 20px 72px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      align-items: start;
+      margin-bottom: 28px;
+    }
+
+    .panel {
+      background: color-mix(in srgb, var(--panel) 92%, white 8%);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.74rem;
+    }
+
+    h1,
+    h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.1;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 4.6rem);
+      margin-top: 18px;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      margin-bottom: 14px;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .lede {
+      font-size: 1.08rem;
+      margin-top: 18px;
+      max-width: 46rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .button,
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 18px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
+    }
+
+    .button:hover,
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary,
+    button {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 14px 28px rgba(15, 118, 110, 0.2);
+    }
+
+    .button-secondary {
+      background: rgba(15, 118, 110, 0.08);
+      color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .step {
+      padding: 18px 18px 18px 22px;
+      border-left: 4px solid var(--accent);
+      background: rgba(15, 118, 110, 0.05);
+      border-radius: 18px;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    label {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font: inherit;
+      color: var(--ink);
+      background: white;
+    }
+
+    .hint {
+      font-size: 0.92rem;
+    }
+
+    .tip-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .tip {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(31, 42, 46, 0.04);
+      color: var(--ink);
+    }
+
+    .tip strong {
+      color: var(--accent);
+    }
+
+    #copy-feedback {
+      min-height: 1.2rem;
+      color: var(--accent);
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding: 28px 16px 48px;
+      }
+
+      .panel {
+        padding: 22px;
+        border-radius: 20px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .button,
+      button {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="panel">
+        <div class="eyebrow">Vaultwarden</div>
+        <h1>Creer votre compte puis connecter l'extension Bitwarden.</h1>
+        <p class="lede">Cette page vous donne le parcours le plus simple pour acceder a votre coffre-fort et l'URL exacte a renseigner dans l'extension.</p>
+        <div class="actions">
+          <a class="button button-primary" href="{$VAULTWARDEN_DOMAIN}">Ouvrir Vaultwarden</a>
+          <a class="button button-secondary" href="{$VAULTWARDEN_DOMAIN}/admin">Acces admin</a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>URL a copier</h2>
+        <p>Dans l'extension Bitwarden, le champ <strong>URL du serveur</strong> doit contenir exactement cette valeur.</p>
+        <div class="field">
+          <label for="server-url">URL du serveur</label>
+          <input id="server-url" type="text" readonly value="{$VAULTWARDEN_DOMAIN}">
+        </div>
+        <div class="actions">
+          <button type="button" onclick="copyServerUrl()">Copier l'URL</button>
+        </div>
+        <div id="copy-feedback" aria-live="polite"></div>
+        <p class="hint">Si un port non standard est configure, conservez-le tel quel dans l'extension.</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>1. Creer votre compte</h2>
+        <div class="stack">
+          <div class="step">
+            <strong>Ouvrez l'interface web Vaultwarden</strong>
+            Cliquez sur le bouton <strong>Ouvrir Vaultwarden</strong> puis utilisez l'option de creation de compte presente sur la page d'accueil.
+          </div>
+          <div class="step">
+            <strong>Renseignez vos informations</strong>
+            Saisissez votre adresse e-mail et choisissez un mot de passe maitre robuste. Ce mot de passe servira ensuite dans l'application et dans l'extension.
+          </div>
+          <div class="step">
+            <strong>Validez l'inscription</strong>
+            Une fois le compte cree, revenez sur cette page pour configurer l'extension avec la bonne URL serveur.
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>2. Configurer l'extension</h2>
+        <div class="stack">
+          <div class="step">
+            <strong>Installez l'extension Bitwarden</strong>
+            Ajoutez l'extension a votre navigateur si ce n'est pas deja fait.
+          </div>
+          <div class="step">
+            <strong>Ouvrez les parametres avances</strong>
+            Avant de vous connecter, cliquez sur l'icone engrenage ou sur l'ecran de choix du serveur selon votre navigateur.
+          </div>
+          <div class="step">
+            <strong>Remplissez les champs</strong>
+            Dans <strong>URL du serveur</strong>, collez <strong>{$VAULTWARDEN_DOMAIN}</strong>. Ensuite, saisissez votre e-mail et votre mot de passe maitre dans les champs de connexion.
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="grid" style="margin-top: 20px;">
+      <article class="panel">
+        <h2>Reperes utiles</h2>
+        <div class="tip-list">
+          <div class="tip"><strong>Connexion web :</strong> {$VAULTWARDEN_DOMAIN}</div>
+          <div class="tip"><strong>Panneau admin :</strong> {$VAULTWARDEN_DOMAIN}/admin</div>
+          <div class="tip"><strong>Important :</strong> l'inscription libre depend du parametrage realise par l'administrateur sur le serveur.</div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>En cas de probleme</h2>
+        <div class="tip-list">
+          <div class="tip"><strong>URL refusee :</strong> verifiez que vous avez bien colle toute l'adresse, y compris le port.</div>
+          <div class="tip"><strong>Page inaccessible :</strong> assurez-vous que le nom de domaine resolu pointe bien vers l'IP locale du serveur.</div>
+          <div class="tip"><strong>Creation de compte indisponible :</strong> contactez l'administrateur si l'inscription a ete fermee apres la phase d'onboarding.</div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    function copyServerUrl() {
+      const input = document.getElementById('server-url');
+      const feedback = document.getElementById('copy-feedback');
+
+      navigator.clipboard.writeText(input.value).then(function () {
+        feedback.textContent = 'URL copiee. Vous pouvez maintenant la coller dans l\'extension.';
+      }).catch(function () {
+        input.focus();
+        input.select();
+        feedback.textContent = 'Copie automatique indisponible. Selectionnez l\'URL puis copiez-la manuellement.';
+      });
+    }
+  </script>
+</body>
+</html>
+HTML 200
+    }
+
+    # Header IP réelle pour les logs Vaultwarden
+    reverse_proxy vaultwarden:80 {
+      header_up X-Real-IP {remote_host}
+    }
+  }
+}
