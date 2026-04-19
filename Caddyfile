@@ -258,8 +258,8 @@
     <section class="hero">
       <div class="panel">
         <div class="eyebrow">Vaultwarden</div>
-        <h1>Creer votre compte puis connecter l'extension Bitwarden.</h1>
-        <p class="lede">Cette page vous donne le parcours le plus simple pour acceder a votre coffre-fort et l'URL exacte a renseigner dans l'extension.</p>
+        <h1>Connecter l'extension Bitwarden a votre coffre-fort.</h1>
+        <p class="lede">Votre compte est cree par l'administrateur a partir de votre nom d'utilisateur. Cette page vous donne l'URL exacte a renseigner dans l'extension et les etapes pour vous connecter.</p>
         <div class="actions">
           <a class="button button-primary" href="{$VAULTWARDEN_DOMAIN}">Ouvrir Vaultwarden</a>
           <a class="button button-secondary" href="{$VAULTWARDEN_DOMAIN}/admin">Acces admin</a>
@@ -283,19 +283,19 @@
 
     <section class="grid">
       <article class="panel">
-        <h2>1. Creer votre compte</h2>
+        <h2>1. Obtenir votre compte</h2>
         <div class="stack">
           <div class="step">
-            <strong>Ouvrez l'interface web Vaultwarden</strong>
-            Cliquez sur le bouton <strong>Ouvrir Vaultwarden</strong> puis utilisez l'option de creation de compte presente sur la page d'accueil.
+            <strong>Demandez a l'administrateur</strong>
+            Communiquez votre nom d'utilisateur souhaite a l'administrateur du serveur. Il creera votre compte.
           </div>
           <div class="step">
-            <strong>Renseignez vos informations</strong>
-            Saisissez votre adresse e-mail et choisissez un mot de passe maitre robuste. Ce mot de passe servira ensuite dans l'application et dans l'extension.
+            <strong>Recevez vos identifiants</strong>
+            L'administrateur vous transmettra votre identifiant de connexion (au format <strong>username@vault.internal</strong>) ainsi qu'un lien d'invitation.
           </div>
           <div class="step">
-            <strong>Validez l'inscription</strong>
-            Une fois le compte cree, revenez sur cette page pour configurer l'extension avec la bonne URL serveur.
+            <strong>Definissez votre mot de passe maitre</strong>
+            Ouvrez le lien d'invitation ou rendez-vous sur Vaultwarden et connectez-vous avec l'identifiant fourni. Choisissez un mot de passe maitre robuste.
           </div>
         </div>
       </article>
@@ -313,7 +313,7 @@
           </div>
           <div class="step">
             <strong>Remplissez les champs</strong>
-            Dans <strong>URL du serveur</strong>, collez <strong>{$VAULTWARDEN_DOMAIN}</strong>. Ensuite, saisissez votre e-mail et votre mot de passe maitre dans les champs de connexion.
+            Dans <strong>URL du serveur</strong>, collez <strong>{$VAULTWARDEN_DOMAIN}</strong>. Ensuite, saisissez l'identifiant transmis par l'administrateur et votre mot de passe maitre dans les champs de connexion.
           </div>
         </div>
       </article>
@@ -325,7 +325,7 @@
         <div class="tip-list">
           <div class="tip"><strong>Connexion web :</strong> {$VAULTWARDEN_DOMAIN}</div>
           <div class="tip"><strong>Panneau admin :</strong> {$VAULTWARDEN_DOMAIN}/admin</div>
-          <div class="tip"><strong>Important :</strong> l'inscription libre depend du parametrage realise par l'administrateur sur le serveur.</div>
+          <div class="tip"><strong>Important :</strong> seul l'administrateur peut creer des comptes. Contactez-le avec votre nom d'utilisateur souhaite.</div>
         </div>
       </article>
 
@@ -334,7 +334,7 @@
         <div class="tip-list">
           <div class="tip"><strong>URL refusee :</strong> verifiez que vous avez bien colle toute l'adresse, y compris le port.</div>
           <div class="tip"><strong>Page inaccessible :</strong> assurez-vous que le nom de domaine resolu pointe bien vers l'IP locale du serveur.</div>
-          <div class="tip"><strong>Creation de compte indisponible :</strong> contactez l'administrateur si l'inscription a ete fermee apres la phase d'onboarding.</div>
+          <div class="tip"><strong>Pas de compte :</strong> contactez l'administrateur avec votre nom d'utilisateur souhaite pour qu'il cree votre acces.</div>
         </div>
       </article>
     </section>

@@ -61,7 +61,7 @@ Une fois les services démarrés, vous pouvez envoyer cette URL aux utilisateurs
 
 Par exemple : `https://ma-vault.duckdns.org:8443/guide`
 
-Cette page rappelle comment créer un compte via l'interface web Vaultwarden puis quoi renseigner dans l'extension Bitwarden, avec l'URL du serveur affichée automatiquement à partir de `VAULTWARDEN_DOMAIN`.
+Cette page rappelle comment se connecter après avoir reçu son compte et quoi renseigner dans l'extension Bitwarden, avec l'URL du serveur affichée automatiquement à partir de `VAULTWARDEN_DOMAIN`.
 
 ## Configuration des extensions Bitwarden
 
@@ -71,29 +71,36 @@ Vous pouvez soit envoyer directement la page guide aux utilisateurs, soit leur c
 2. Avant de vous connecter, cliquez sur l'icône **engrenage** (paramètres)
 3. Dans **URL du serveur**, entrez la valeur définie dans `VAULTWARDEN_DOMAIN`
 4. Si vous utilisez un port HTTPS non standard, gardez bien le port dans l'URL, par ex. `https://ma-vault.duckdns.org:8443`
-5. Enregistrez, puis créez votre compte ou connectez-vous
+5. Enregistrez, puis connectez-vous avec l'identifiant transmis par l'administrateur
 
 ## Administration
 
-Tant que `SIGNUPS_ALLOWED=true`, les utilisateurs peuvent créer leur compte depuis l'interface web Vaultwarden. Le guide utilisateur est disponible à l'adresse `VAULTWARDEN_DOMAIN/guide`, par ex. `https://ma-vault.duckdns.org:8443/guide`.
+L'inscription publique est désactivée (`SIGNUPS_ALLOWED=false`). Les comptes sont créés par l'administrateur à partir d'un **nom d'utilisateur** via le script fourni.
 
-Accédez au panneau d'administration à partir de `VAULTWARDEN_DOMAIN`, par ex. `https://ma-vault.duckdns.org:8443/admin`
+Le guide utilisateur est disponible à l'adresse `VAULTWARDEN_DOMAIN/guide`, par ex. `https://ma-vault.duckdns.org:8443/guide`.
+
+Accédez au panneau d'administration à partir de `VAULTWARDEN_DOMAIN/admin`, par ex. `https://ma-vault.duckdns.org:8443/admin`
 
 Entrez le mot de passe choisi lors de la génération du hash.
 
-### Après création de tous les comptes utilisateurs
+### Créer un compte utilisateur
 
-Modifiez `.env` :
-
-```env
-SIGNUPS_ALLOWED=false
-```
-
-Puis redémarrez :
+Utilisez le script `scripts/invite_user.sh` en passant le nom d'utilisateur souhaité :
 
 ```bash
-docker compose down && docker compose up -d
+./scripts/invite_user.sh alice
 ```
+
+Le script :
+1. Normalise le username (minuscules, caractères `a-z 0-9 . - _` uniquement)
+2. Génère un email technique : `alice@vault.internal`
+3. Crée l'invitation via l'API admin de Vaultwarden
+
+L'utilisateur peut ensuite se connecter à Vaultwarden avec l'identifiant `alice@vault.internal` et définir son mot de passe maître.
+
+Le domaine technique (`EMAIL_DOMAIN`) est configurable dans `.env` (par défaut : `vault.internal`).
+
+> **Note :** si un username existe déjà, le script le signale et refuse de créer un doublon.
 
 ## Structure du projet
 
@@ -104,6 +111,8 @@ docker compose down && docker compose up -d
 ├── Caddyfile            # Configuration du reverse proxy
 ├── caddy/
 │   └── Dockerfile       # Build Caddy avec plugin Duck DNS
+├── scripts/
+│   └── invite_user.sh   # Création de compte par username
 └── vw-data/             # Données Vaultwarden (à sauvegarder !)
 ```
 
