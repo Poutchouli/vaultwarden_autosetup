@@ -9,9 +9,15 @@ Déploiement Vaultwarden avec HTTPS automatique via Caddy + Duck DNS, accessible
 
 ## Démarrage rapide
 
-### 1. Configurer le `.env`
+### 1. Créer le `.env`
 
-Modifiez le fichier `.env` à la racine du projet avec vos valeurs :
+Copiez le modèle puis modifiez le fichier `.env` à la racine du projet :
+
+```bash
+cp .env.example .env
+```
+
+Valeurs à renseigner dans `.env` :
 
 ```env
 DUCKDNS_SUBDOMAIN=ma-vault
@@ -92,7 +98,8 @@ docker compose down && docker compose up -d
 ## Structure du projet
 
 ```text
-├── .env                 # Variables de configuration (secrets)
+├── .env                 # Variables de configuration locales (ignoré par Git)
+├── .env.example         # Modèle sans secret à versionner
 ├── docker-compose.yml   # Orchestration des services
 ├── Caddyfile            # Configuration du reverse proxy
 ├── caddy/
