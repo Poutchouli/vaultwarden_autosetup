@@ -26,18 +26,23 @@ VAULTWARDEN_DOMAIN=https://ma-vault.duckdns.org:8443
 CADDY_HTTP_PORT=8080
 CADDY_HTTPS_PORT=8443
 CONTACT_EMAIL=admin@example.com
+ADMIN_TOKEN=remplacer-par-un-token-admin-fort
+EMAIL_DOMAIN=vault.internal
 ```
 
 Si vous n'utilisez pas le port HTTPS standard 443, l'URL dans `VAULTWARDEN_DOMAIN` doit inclure le port.
 Le port défini dans `CADDY_HTTPS_PORT` doit être le même que celui utilisé dans `VAULTWARDEN_DOMAIN`.
 
-### 2. Générer un hash pour l'ADMIN_TOKEN
+### 2. Définir `ADMIN_TOKEN`
 
 ```bash
-docker run --rm -it vaultwarden/server /vaultwarden hash
+openssl rand -base64 48
 ```
 
-Copiez le résultat dans `ADMIN_TOKEN` du fichier `.env`.
+Copiez le résultat tel quel dans `ADMIN_TOKEN` du fichier `.env`.
+N'utilisez pas ici de hash Argon2id si vous voulez conserver le fonctionnement
+du script `scripts/invite_user.sh`, qui se connecte au panneau admin avec le
+token en clair.
 
 ### 3. Lancer les services
 
